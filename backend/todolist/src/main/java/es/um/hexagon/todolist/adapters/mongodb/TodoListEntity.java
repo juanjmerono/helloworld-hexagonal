@@ -1,10 +1,10 @@
 package es.um.hexagon.todolist.adapters.mongodb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -30,15 +30,23 @@ public class TodoListEntity {
 
     public TodoListEntity(TodoList todoList) {
         this.id = UUID.randomUUID().toString();
-        BeanUtils.copyProperties(todoList, this);
+        this.user = todoList.getUser();
+        this.name = todoList.getName();
     }
 
     public TodoList toTodoList() {
-        TodoList todoList = new TodoList();
-        BeanUtils.copyProperties(this, todoList, "todoItems");
-        List<Todo> todoItems = this.todoItems.stream().map(TodoEntity::toTodo).collect(Collectors.toList());
-        todoList.setTodoItems(todoItems);
+        TodoList todoList = new TodoList(this.user, this.name);
+        if (this.todoItems!=null) {
+            todoList.setTodoItems(this.todoItems.stream().map(TodoEntity::toTodo).collect(Collectors.toList()));
+        }
         return todoList;
     }
+    
+    public void addTodo(Todo todo) {
+        if (this.todoItems==null) {
+            this.todoItems = new ArrayList<TodoEntity>();
+        }
+        this.todoItems.add(new TodoEntity(todo));
+    }    
 
 }

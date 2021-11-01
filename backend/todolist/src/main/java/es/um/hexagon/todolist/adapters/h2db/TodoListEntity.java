@@ -1,5 +1,6 @@
 package es.um.hexagon.todolist.adapters.h2db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,9 +39,17 @@ public class TodoListEntity {
 
     public TodoList toTodoList() {
         TodoList todoList = new TodoList(this.user, this.name);
-        List<Todo> todoItems = this.todoItems.stream().map(TodoEntity::toTodo).collect(Collectors.toList());
-        todoList.setTodoItems(todoItems);
+        if (this.todoItems!=null) {
+            todoList.setTodoItems(this.todoItems.stream().map(TodoEntity::toTodo).collect(Collectors.toList()));
+        }
         return todoList;
     }
+
+    public void addTodo(Todo todo) {
+        if (this.todoItems==null) {
+            this.todoItems = new ArrayList<TodoEntity>();
+        }
+        this.todoItems.add(new TodoEntity(todo));
+    }    
 
 }

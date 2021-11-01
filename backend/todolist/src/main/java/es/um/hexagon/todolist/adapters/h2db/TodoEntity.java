@@ -25,10 +25,10 @@ public class TodoEntity {
         // required empty constructor
     }
 
-    public TodoEntity(String description, LocalDate dueDate) {
+    public TodoEntity(Todo todo) {
         this.id = UUID.randomUUID().toString();
-        this.description = description;
-        this.dueDate = dueDate;
+        this.description = todo.getDescription();
+        this.dueDate = todo.getDueDate();
     }
 
 

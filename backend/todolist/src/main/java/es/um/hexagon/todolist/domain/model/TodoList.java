@@ -1,5 +1,6 @@
 package es.um.hexagon.todolist.domain.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TodoList {
@@ -24,5 +25,12 @@ public class TodoList {
     public String getUser() { return user; }
 
     public void setTodoItems(List<Todo> newItems) { this.todoItems = newItems; }
+
+    public void addTodo(Todo todo) { 
+        if (this.todoItems==null) {
+            this.todoItems = new ArrayList<Todo>();
+        }
+        this.todoItems.add(todo); 
+    }
 
 }

@@ -1,6 +1,7 @@
 package es.um.hexagon.todolist.adapters.mongodb;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -24,9 +25,10 @@ public class TodoEntity {
         // required empty constructor
     }
 
-    public TodoEntity(String description, LocalDate dueDate) {
-        this.description = description;
-        this.dueDate = dueDate;
+    public TodoEntity(Todo todo) {
+        this.id = UUID.randomUUID().toString();
+        this.description = todo.getDescription();
+        this.dueDate = todo.getDueDate();
     }
 
 
