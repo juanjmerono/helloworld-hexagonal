@@ -1,0 +1,59 @@
+package es.um.hexagon.todolist.adapters.mongodb;
+
+import java.util.Arrays;
+
+import org.apache.logging.log4j.LogManager;
+import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import es.um.hexagon.todolist.domain.model.TodoList;
+
+@Service("todoListSeederMongoService")
+public class TodoListSeederService {
+    
+    private TodoListRepository todoListRepository;
+
+    @Autowired
+    public TodoListSeederService(TodoListRepository todoListRepository) {
+        this.todoListRepository = todoListRepository;
+        this.seedDatabase();
+    }
+
+    public void seedDatabase() {
+
+        LogManager.getLogger(this.getClass()).warn("------ Populating TodoList Database ------");
+        LogManager.getLogger(this.getClass()).warn("------ "+AopProxyUtils.ultimateTargetClass(this.todoListRepository)+" ------");
+
+        TodoEntity [] todoEntities0 = {
+            new TodoEntity("l0 todo 1",null),
+            new TodoEntity("l0 todo 2",null),
+            new TodoEntity("l0 todo 3",null),
+        };
+
+        TodoEntity [] todoEntities1 = {
+            new TodoEntity("l1 todo 1",null),
+            new TodoEntity("l1 todo 2",null),
+            new TodoEntity("l1 todo 3",null),
+        };
+
+        TodoEntity [] todoEntities2 = {
+            new TodoEntity("l2 todo 1",null),
+            new TodoEntity("l2 todo 2",null),
+            new TodoEntity("l2 todo 3",null),
+        };
+
+        TodoListEntity [] todoListEntities = {
+            new TodoListEntity(new TodoList("pepe","lista1")),
+            new TodoListEntity(new TodoList("pepe","lista2")),
+            new TodoListEntity(new TodoList("juan","lista0")),
+        };
+
+        todoListEntities[0].setTodoItems(Arrays.asList(todoEntities0));
+        todoListEntities[1].setTodoItems(Arrays.asList(todoEntities1));
+        todoListEntities[2].setTodoItems(Arrays.asList(todoEntities2));
+
+        todoListRepository.saveAll(Arrays.asList(todoListEntities));
+    }
+
+}
