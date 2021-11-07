@@ -6,14 +6,17 @@ import org.springframework.stereotype.Repository;
 
 import es.um.hexagon.todolist.domain.model.Todo;
 import es.um.hexagon.todolist.domain.model.TodoList;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository
 public interface TodoListPersistence {
     
-    Stream<TodoList> findAll();
+    //Stream<TodoList> findAll();
+    Flux<TodoList> findAll();
 
-    TodoList newTodoList(TodoList todoList);
+    Mono<TodoList> newTodoList(TodoList todoList);
 
-    Todo addTodo(TodoList todoList);
+    Mono<Todo> addTodo(TodoList todoList);
 
 }

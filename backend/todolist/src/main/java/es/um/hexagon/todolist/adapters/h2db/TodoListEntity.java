@@ -5,17 +5,21 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
+import org.springframework.data.annotation.Id;
+
+/*import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToMany;*/
 
 import es.um.hexagon.todolist.domain.model.Todo;
 import es.um.hexagon.todolist.domain.model.TodoList;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+//@Entity
+@Data
 public class TodoListEntity {
     @Id
     private String id;
@@ -24,7 +28,7 @@ public class TodoListEntity {
     @Getter @Setter
     private String name;
     @Getter @Setter
-    @OneToMany(cascade = CascadeType.ALL)
+    //@OneToMany(cascade = CascadeType.ALL)
     private List<TodoEntity> todoItems;
 
     public TodoListEntity() {

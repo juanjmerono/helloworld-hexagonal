@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import es.um.hexagon.todolist.domain.model.Todo;
 import es.um.hexagon.todolist.domain.model.TodoList;
 import es.um.hexagon.todolist.domain.spi.TodoListPersistence;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Repository("todoListPersistenceBeta")
 public class TodoListPersistenceMongoDB implements TodoListPersistence {
@@ -16,18 +18,18 @@ public class TodoListPersistenceMongoDB implements TodoListPersistence {
     private TodoListRepository todoListRepository;
 
     @Override
-    public Stream<TodoList> findAll() {
-        return this.todoListRepository.findAll().stream().map(TodoListEntity::toTodoList);
+    public Flux<TodoList> findAll() {
+        return this.todoListRepository.findAll().map(TodoListEntity::toTodoList);
     }
 
     @Override
-    public TodoList newTodoList(TodoList todoList) {
-        return this.todoListRepository.save(new TodoListEntity(todoList)).toTodoList();
+    public Mono<TodoList> newTodoList(TodoList todoList) {
+        return this.todoListRepository.save(new TodoListEntity(todoList)).map(TodoListEntity::toTodoList);
     }
 
     @Override
-    public Todo addTodo(TodoList todoList) {
-        Todo todo = todoList.getTodoItems().get(0);
+    public Mono<Todo> addTodo(TodoList todoList) {
+        /*Todo todo = todoList.getTodoItems().get(0);
         TodoListEntity todoListEntity = this.todoListRepository
             .findByUser(todoList.getUser()).stream()
             .filter(item -> todoList.getName().equals(item.getName()))
@@ -38,7 +40,8 @@ public class TodoListPersistenceMongoDB implements TodoListPersistence {
             .getTodoItems().stream()
             .filter(item -> todo.getDescription().equals(item.getDescription()))
             .findFirst()
-            .orElse(new TodoEntity(todo)).toTodo();
+            .orElse(new TodoEntity(todo)).toTodo();*/
+        return null;
     }
 
 }

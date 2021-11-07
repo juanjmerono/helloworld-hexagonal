@@ -3,14 +3,18 @@ package es.um.hexagon.todolist.adapters.h2db;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import org.springframework.data.annotation.Id;
+
+//import javax.persistence.Entity;
+//import javax.persistence.Id;
 
 import es.um.hexagon.todolist.domain.model.Todo;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+//@Entity
+@Data
 public class TodoEntity {
     
     @Id

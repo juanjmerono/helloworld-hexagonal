@@ -9,6 +9,8 @@ import es.um.hexagon.todolist.domain.api.TodoListService;
 import es.um.hexagon.todolist.domain.model.Todo;
 import es.um.hexagon.todolist.domain.model.TodoList;
 import es.um.hexagon.todolist.domain.spi.TodoListPersistence;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service("todoListService")
 public class TodoListServiceImpl implements TodoListService {
@@ -17,17 +19,17 @@ public class TodoListServiceImpl implements TodoListService {
     private TodoListPersistence todoListPersistence;
 
     @Override
-    public Stream<TodoList> findAll() {
+    public Flux<TodoList> findAll() {
         return this.todoListPersistence.findAll();
     }
 
     @Override
-    public TodoList newTodoList(TodoList todoList) {
+    public Mono<TodoList> newTodoList(TodoList todoList) {
         return this.todoListPersistence.newTodoList(todoList);
     }
 
     @Override
-    public Todo addTodo(TodoList todoList) {
+    public Mono<Todo> addTodo(TodoList todoList) {
         return this.todoListPersistence.addTodo(todoList);
     }
 

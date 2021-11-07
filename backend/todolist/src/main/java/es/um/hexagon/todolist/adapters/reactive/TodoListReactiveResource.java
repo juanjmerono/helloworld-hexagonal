@@ -1,4 +1,4 @@
-package es.um.hexagon.todolist.adapters.rest;
+package es.um.hexagon.todolist.adapters.reactive;
 
 import java.util.stream.Stream;
 
@@ -16,33 +16,39 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping(TodoListResource.TODOLIST)
-public class TodoListResource {
+@RequestMapping(TodoListReactiveResource.TODOLIST)
+public class TodoListReactiveResource {
     
-    static final String TODOLIST = "/todolists";
+    static final String TODOLIST = "/reactive/todolists";
     static final String SEARCH = "/search";
     static final String TODO = "/todo";
 
     private TodoListService todoListService;
 
     @Autowired
-    public TodoListResource(TodoListService todoListService) {
+    public TodoListReactiveResource(TodoListService todoListService) {
         this.todoListService = todoListService;
     }
 
     @GetMapping(SEARCH)
     public Flux<TodoList> findAll() {
         return todoListService.findAll();
+        //return Mono.fromSupplier(() -> new Todo("Mi first todo", null));
+    }
+
+    /*@GetMapping(SEARCH)
+    public Stream<TodoList> findAll() {
+        return todoListService.findAll();
     }
 
     @PostMapping
-    public Mono<TodoList> newTodoList(@RequestBody TodoList todoList) {
+    public TodoList newTodoList(@RequestBody TodoList todoList) {
         return this.todoListService.newTodoList(todoList);
     }
 
     @PostMapping(TODO)
-    public Mono<Todo> addTodo(@RequestBody TodoList todoList) {
+    public Todo addTodo(@RequestBody TodoList todoList) {
         return this.todoListService.addTodo(todoList);
-    }
+    }*/
 
 }
