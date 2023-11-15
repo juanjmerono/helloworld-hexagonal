@@ -1,0 +1,93 @@
+CREATE TABLE TODO.USERS(
+		id VARCHAR(36) NOT NULL,
+		subid VARCHAR(36) NOT NULL,
+		username VARCHAR(100) NOT NULL,
+		CONSTRAINT PK_USERS PRIMARY KEY (id, subid)
+	);
+
+CREATE TABLE TODO.TODOS(
+		id VARCHAR(36) NOT NULL,
+		subid VARCHAR(36) NOT NULL,
+		descrip VARCHAR(100) NOT NULL,
+		due DATE NOT NULL,
+		CONSTRAINT PK_TODOS PRIMARY KEY (id, subid)
+	);
+
+CREATE TABLE TODO.USERS_TODOS(
+		user_id VARCHAR(36) NOT NULL,
+		user_subid VARCHAR(36) NOT NULL,
+		todo_id VARCHAR(36) NOT NULL,
+		todo_subid VARCHAR(36) NOT NULL,
+		CONSTRAINT PK_LISTS PRIMARY KEY (user_id, user_subid, todo_id, todo_subid)
+	);
+
+---------
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Embeddable
+public class CompositeId implements Serializable {
+
+    private String id;
+    private String subid;
+
+}
+
+--- Mapeo SOLO User y Todos, desde el User llego a los todos
+
+@NoArgsConstructor
+@Entity
+@Table(name = "USERS", schema = "TODO")
+public class UserEntity {
+    
+    @EmbeddedId
+    private CompositeId id;
+
+    @Getter @Setter
+    private String username;
+
+    @Getter @Setter
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        schema = "TODO",
+        name = "USERS_TODOS", 
+        joinColumns = {
+            @JoinColumn(name = "user_id"),
+            @JoinColumn(name = "user_subid")
+        }, 
+        inverseJoinColumns = {
+            @JoinColumn(name = "todo_id"),
+            @JoinColumn(name = "todo_subid")
+        })
+    private List<TodoEntity> todos;
+
+}
+
+--- Y TODOS
+
+@NoArgsConstructor
+@Entity
+@Table(name = "TODOS", schema = "TODO")
+public class TodoEntity {
+    
+    @EmbeddedId
+    private CompositeId id;
+
+    @Getter @Setter
+    @Column(name = "descrip")
+    private String description;
+
+    @Getter @Setter
+    @Column(name = "due")
+    private LocalDate dueDate;
+
+    @Getter @Setter
+    @ManyToMany(mappedBy = "todos")
+    private List<UserEntity> users;
+
+    public Todo toModel() {
+        return Todo.of(this.description, this.dueDate);
+    }
+
+}
