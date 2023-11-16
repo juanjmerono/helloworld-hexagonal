@@ -17,6 +17,9 @@ public class TribunalRepositoryTest {
     @Autowired
     private TribunalRepository tribunalRepository;
 
+    @Autowired
+    private TribunalService tribunalService;
+
     @Test
     public void testFindAllTodos() {
         TribunalId tId = new TribunalId("12345678","T1","G",2023);
@@ -27,6 +30,18 @@ public class TribunalRepositoryTest {
             .anyMatch(c -> c.getNombre().equals("Coord1") && c.getEmail().equals("email1@a.com")));
 
         trib.get().getTitu().getCoords().stream().forEach(System.err::println);
+    }
+
+    @Test
+    public void testFindAlternative() {
+        TribunalId tId = new TribunalId("12345678","T1","G",2023);
+        Optional<TribunalAllEntity> trib = tribunalService.findById(tId);
+        assertTrue(trib.isPresent());
+        assertEquals(2, trib.get().getCoords().size());
+        assertTrue(trib.get().getCoords().stream()
+            .anyMatch(c -> c.getNombre().equals("Coord1") && c.getId().getEmail().equals("email1@a.com")));
+
+        trib.get().getCoords().stream().forEach(System.err::println);
     }
 
 }

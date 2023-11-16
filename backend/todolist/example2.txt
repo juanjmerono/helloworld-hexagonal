@@ -1,0 +1,158 @@
+CREATE SCHEMA IF NOT EXISTS TODO;
+
+DROP TABLE IF EXISTS TODO.COORDINADOR_ALL;
+DROP TABLE IF EXISTS TODO.TRIBUNAL;
+
+CREATE TABLE TODO.COORDINADOR_ALL (
+		cod_titu VARCHAR(3) NOT NULL,
+		tipo_titulacion VARCHAR(1) NOT NULL,
+		curso_aca INTEGER NOT NULL,
+		email VARCHAR(500) NOT NULL,
+		nombre VARCHAR(82) NOT NULL
+		--CONSTRAINT CONSTRAINT_PK_COORDINADOR PRIMARY KEY (cod_titu, tipo_titulacion, curso_aca, email)
+	);
+
+
+CREATE TABLE TODO.TRIBUNAL(
+		user_id VARCHAR(8) NOT NULL,
+		curso_aca INTEGER NOT NULL,
+		cod_conv_defensa VARCHAR(1) NOT NULL,
+		convocatoria VARCHAR(10) NOT NULL,
+		cod_titu VARCHAR(3) NOT NULL,
+		tipo_titulacion VARCHAR(1) NOT NULL,
+		tipo_tribunal VARCHAR(2) NOT NULL,
+		descripcion VARCHAR(150) NOT NULL,
+		fecha_presentacion TIMESTAMP
+		--CONSTRAINT CONSTRAINT_PK_TRIBUNAL PRIMARY KEY (user_id, cod_titu, tipo_titulacion, curso_aca)
+	);
+
+------
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Embeddable
+public class TribunalId implements Serializable {
+    
+    private String user_id;
+    private String cod_titu;
+    private String tipo_titulacion;
+    private int curso_aca;
+
+}
+---
+@NoArgsConstructor
+@Entity
+@Table(schema = "TODO", name = "TRIBUNAL")
+@Getter
+public class TribunalAllEntity {
+
+    @EmbeddedId
+    private TribunalId id;
+
+    @Column
+    private String cod_conv_defensa;
+    @Column
+    private String convocatoria;
+    @Column
+    private String tipo_tribunal;
+    @Column
+    private String descripcion;
+    @Column
+    private LocalDateTime fecha_presentacion;
+
+    @Transient
+    private List<CoordinadorAllEntity> coords;
+
+    public TribunalAllEntity withCoords(List<CoordinadorAllEntity> coords) {
+        this.coords = coords;
+        return this;
+    }
+
+}
+
+------
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Embeddable
+@Getter
+public class CoordinadorAllId implements Serializable {
+    
+    @Column(columnDefinition = "cod_titu")
+    private String codTitu;
+    @Column(columnDefinition = "tipo_titulacion")
+    private String tipoTitulacion;
+    @Column(columnDefinition = "curso_aca")
+    private int cursoAca;
+    private String email;
+
+}
+---
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(schema = "TODO", name = "COORDINADOR_ALL")
+@Getter
+public class CoordinadorAllEntity {
+
+    
+    @EmbeddedId
+    private CoordinadorAllId id;
+
+    @Column
+    private String nombre;
+
+    public String toString() {
+        return String.format("******* COORDINADOR ALL: [%s] %s", id.getEmail(), nombre);
+    }
+
+}
+
+--------
+
+@Repository("tribunalAllRepository")
+public interface TribunalAllRepository extends JpaRepository<TribunalAllEntity,TribunalId> {
+    Optional<TribunalAllEntity> findById(TribunalId id);
+}
+
+@Repository("coordinadorAllRepository")
+public interface CoordinadorAllRepository extends JpaRepository<CoordinadorAllEntity,CoordinadorAllId> {
+    List<CoordinadorAllEntity> findAllByIdCodTituAndIdTipoTitulacionAndIdCursoAca(String codtitu, String tipotitu, int cursoaca);
+}
+
+--------
+
+@Service
+public class TribunalService {
+    
+    private TribunalAllRepository tribunalAllRepository;
+    private CoordinadorAllRepository coordinadorAllRepository;
+
+    public TribunalService(TribunalAllRepository tribunalAllRepository, CoordinadorAllRepository coordinadorAllRepository) {
+        this.tribunalAllRepository = tribunalAllRepository;
+        this.coordinadorAllRepository = coordinadorAllRepository;
+    }
+
+    public Optional<TribunalAllEntity> findById(TribunalId id) {
+        return tribunalAllRepository.findById(id).map(t -> 
+            t.withCoords(coordinadorAllRepository
+                .findAllByIdCodTituAndIdTipoTitulacionAndIdCursoAca(id.getCod_titu(), id.getTipo_titulacion(), id.getCurso_aca())));
+    }
+    
+
+}
+
+--------
+
+    @Test
+    public void testFindAlternative() {
+        TribunalId tId = new TribunalId("12345678","T1","G",2023);
+        Optional<TribunalAllEntity> trib = tribunalService.findById(tId);
+        assertTrue(trib.isPresent());
+        assertEquals(2, trib.get().getCoords().size());
+        assertTrue(trib.get().getCoords().stream()
+            .anyMatch(c -> c.getNombre().equals("Coord1") && c.getId().getEmail().equals("email1@a.com")));
+
+        trib.get().getCoords().stream().forEach(System.err::println);
+    }
